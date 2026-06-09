@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEO 완전 학습 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F4F1EB;
+  --ink: #1C1A2E;
+  --indigo: #2B2875;
+  --indigo-light: #3D3A9E;
+  --muted: #7A7896;
+  --border: #DDD9CE;
+  --card: #FFFFFF;
+
+  /* 개념 카테고리 색 */
+  --cat-why: #4F46E5;      /* 왜/개요 — 인디고 */
+  --cat-why-bg: #EEF2FF;
+  --cat-tech: #0891B2;     /* 기술 — 시안 */
+  --cat-tech-bg: #ECFEFF;
+  --cat-content: #059669;  /* 콘텐츠 — 에메랄드 */
+  --cat-content-bg: #ECFDF5;
+  --cat-measure: #D97706;  /* 측정 — 앰버 */
+  --cat-measure-bg: #FFFBEB;
+  --cat-strategy: #9333EA; /* 전략 — 퍼플 */
+  --cat-strategy-bg: #FAF5FF;
+
+  --warn: #DC2626;
+  --warn-bg: #FEF2F2;
+  --correct: #16A34A;
+  --correct-bg: #F0FDF4;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--indigo);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 52px;
+}
+.topbar-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: .12em;
+  color: rgba(255,255,255,.7); text-transform: uppercase;
+}
+.progress-wrap { display: flex; align-items: center; gap: 10px; }
+.progress-bar-outer {
+  width: 140px; height: 4px;
+  background: rgba(255,255,255,.2); border-radius: 2px;
+}
+.progress-bar-inner {
+  height: 100%; border-radius: 2px;
+  background: #A5B4FC;
+  transition: width .4s ease;
+}
+.progress-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; color: rgba(255,255,255,.6);
+}
+
+/* ── LAYOUT ── */
+.layout { display: flex; min-height: 100vh; }
+
+/* sidebar */
+.sidebar {
+  width: 260px; flex-shrink: 0;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  position: sticky; top: 52px;
+  height: calc(100vh - 52px);
+  overflow-y: auto;
+  padding: 24px 0;
+}
+.sidebar-section { margin-bottom: 8px; }
+.sidebar-cat {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted);
+  padding: 6px 20px 4px;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-size: 13px; color: #444;
+  border-left: 3px solid transparent;
+  transition: all .15s;
+  text-decoration: none;
+}
+.sidebar-item:hover { background: #F8F7FF; color: var(--indigo); }
+.sidebar-item.active {
+  background: #EEF2FF;
+  border-left-color: var(--cat-why);
+  color: var(--cat-why); font-weight: 600;
+}
+.sidebar-item.active.tech { border-left-color: var(--cat-tech); color: var(--cat-tech); background: var(--cat-tech-bg); }
+.sidebar-item.active.content { border-left-color: var(--cat-content); color: var(--cat-content); background: var(--cat-content-bg); }
+.sidebar-item.active.measure { border-left-color: var(--cat-measure); color: var(--cat-measure); background: var(--cat-measure-bg); }
+.sidebar-item.active.strategy { border-left-color: var(--cat-strategy); color: var(--cat-strategy); background: var(--cat-strategy-bg); }
+.dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* main */
+.main { flex: 1; padding: 48px 56px 120px; max-width: 860px; }
+
+/* ── CONCEPT CARD ── */
+.concept {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 48px;
+  overflow: hidden;
+  scroll-margin-top: 72px;
+}
+.concept-header {
+  padding: 28px 32px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+}
+.concept-meta { display: flex; flex-direction: column; gap: 8px; }
+.concept-cat {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: 20px;
+  width: fit-content;
+}
+.concept-title {
+  font-size: 22px; font-weight: 700;
+  color: var(--indigo); line-height: 1.3;
+}
+.concept-sub { font-size: 13px; color: var(--muted); }
+.concept-body { padding: 28px 32px; }
+
+/* ── SECTIONS WITHIN CARD ── */
+.q-block {
+  background: #F8F7FF;
+  border-left: 3px solid var(--cat-why);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.q-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; color: var(--cat-why);
+  letter-spacing: .08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.q-text { font-size: 14px; line-height: 1.7; color: #333; }
+.q-text strong { color: var(--ink); }
+
+/* misconception box */
+.misconception {
+  background: var(--warn-bg);
+  border: 1px solid #FECACA;
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin: 20px 0;
+}
+.misconception-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; color: var(--warn);
+  letter-spacing: .08em; text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.misconception-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-top: 8px;
+}
+.mc-wrong, .mc-right {
+  border-radius: 8px; padding: 12px 14px; font-size: 13px; line-height: 1.65;
+}
+.mc-wrong {
+  background: #FEE2E2; color: #991B1B;
+}
+.mc-right {
+  background: var(--correct-bg); color: #14532D;
+}
+.mc-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; display: block; margin-bottom: 6px;
+  letter-spacing: .06em; font-weight: 700; text-transform: uppercase;
+}
+
+/* diagram */
+.diagram {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+.diagram-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: .08em;
+  color: var(--muted); text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+/* flow diagram SVG wrapper */
+.flow-wrap { overflow-x: auto; }
+
+/* comparison table */
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
+.cmp-table th {
+  background: var(--indigo); color: white;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: .06em; padding: 10px 14px; text-align: left; font-weight: 400;
+}
+.cmp-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.cmp-table tr:last-child td { border-bottom: none; }
+.cmp-table tr:nth-child(even) td { background: #FAFAF8; }
+
+/* connection chips */
+.connections { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+.conn-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; margin-right: 4px; letter-spacing: .06em; }
+.conn-chip {
+  font-size: 12px; padding: 3px 10px; border-radius: 20px;
+  border: 1px solid var(--border);
+  cursor: pointer; color: var(--muted);
+  transition: all .15s;
+}
+.conn-chip:hover { background: #EEF2FF; color: var(--cat-why); border-color: var(--cat-why); }
+
+/* checklist */
+.checklist { list-style: none; margin: 16px 0; }
+.checklist li {
+  padding: 9px 0 9px 28px; position: relative;
+  font-size: 14px; border-bottom: 1px solid #F0EDE6; color: #333;
+}
+.checklist li:last-child { border-bottom: none; }
+.checklist li::before {
+  content: '○'; position: absolute; left: 0;
+  color: var(--cat-why); font-size: 14px;
+}
+
+/* highlight box */
+.highlight {
+  border-radius: 10px; padding: 18px 20px; margin: 16px 0;
+  font-size: 14px; line-height: 1.7;
+}
+.highlight.purple { background: var(--cat-strategy-bg); border-left: 3px solid var(--cat-strategy); }
+.highlight.teal { background: var(--cat-tech-bg); border-left: 3px solid var(--cat-tech); }
+.highlight.green { background: var(--cat-content-bg); border-left: 3px solid var(--cat-content); }
+.highlight.amber { background: var(--cat-measure-bg); border-left: 3px solid var(--cat-measure); }
+.hl-label {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: .08em; text-transform: uppercase;
+  margin-bottom: 8px; display: block;
+}
+.purple .hl-label { color: var(--cat-strategy); }
+.teal .hl-label { color: var(--cat-tech); }
+.green .hl-label { color: var(--cat-content); }
+.amber .hl-label { color: var(--cat-measure); }
+
+/* section divider within card */
+.section-divider {
+  border: none; border-top: 1px dashed var(--border); margin: 24px 0;
+}
+
+h4 { font-size: 15px; font-weight: 700; color: var(--indigo); margin: 20px 0 10px; }
+p { font-size: 14px; color: #444; margin-bottom: 12px; line-height: 1.75; }
+ul, ol { padding-left: 18px; margin: 10px 0; }
+li { font-size: 14px; color: #444; line-height: 1.75; margin-bottom: 3px; }
+strong { color: var(--ink); }
+
+/* ── SVG DIAGRAMS ── */
+svg text { font-family: 'Pretendard', sans-serif; }
+
+/* mobile */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { padding: 24px 20px 80px; }
+  .misconception-row { grid-template-columns: 1fr; }
+  .concept-header { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-title">GEO Complete Learning Guide</span>
+  <div class="progress-wrap">
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress" style="width:0%"></div></div>
+    <span class="progress-label" id="progress-label">0%</span>
+  </div>
+</div>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-cat">왜 GEO인가</div>
+    <a class="sidebar-item why" href="#zero-click" onclick="setActive(this,'why')">
+      <span class="dot" style="background:var(--cat-why)"></span>Zero-click
+    </a>
+    <a class="sidebar-item" href="#geo-vs-seo" onclick="setActive(this,'why')">
+      <span class="dot" style="background:var(--cat-why)"></span>GEO vs SEO
+    </a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-cat">기술 기반</div>
+    <a class="sidebar-item" href="#crawling" onclick="setActive(this,'tech')">
+      <span class="dot" style="background:var(--cat-tech)"></span>크롤링 & 접근성
+    </a>
+    <a class="sidebar-item" href="#schema" onclick="setActive(this,'tech')">
+      <span class="dot" style="background:var(--cat-tech)"></span>Schema / JSON-LD
+    </a>
+    <a class="sidebar-item" href="#llms-txt" onclick="setActive(this,'tech')">
+      <span class="dot" style="background:var(--cat-tech)"></span>llms.txt
+    </a>
+    <a class="sidebar-item" href="#cwv" onclick="setActive(this,'tech')">
+      <span class="dot" style="background:var(--cat-tech)"></span>Core Web Vitals
+    </a>
+    <a class="sidebar-item" href="#canonical" onclick="setActive(this,'tech')">
+      <span class="dot" style="background:var(--cat-tech)"></span>Canonical & 중복
+    </a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-cat">콘텐츠 구축</div>
+    <a class="sidebar-item" href="#answer-capsule" onclick="setActive(this,'content')">
+      <span class="dot" style="background:var(--cat-content)"></span>Answer Capsule
+    </a>
+    <a class="sidebar-item" href="#query-fanout" onclick="setActive(this,'content')">
+      <span class="dot" style="background:var(--cat-content)"></span>Query Fanout
+    </a>
+    <a class="sidebar-item" href="#entity-authority" onclick="setActive(this,'content')">
+      <span class="dot" style="background:var(--cat-content)"></span>Entity Authority
+    </a>
+    <a class="sidebar-item" href="#earned-media" onclick="setActive(this,'content')">
+      <span class="dot" style="background:var(--cat-content)"></span>Earned Media
+    </a>
+    <a class="sidebar-item" href="#dual-layer" onclick="setActive(this,'content')">
+      <span class="dot" style="background:var(--cat-content)"></span>이중 레이어 설계
+    </a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-cat">측정</div>
+    <a class="sidebar-item" href="#kpi-map" onclick="setActive(this,'measure')">
+      <span class="dot" style="background:var(--cat-measure)"></span>KPI 전체 지도
+    </a>
+    <a class="sidebar-item" href="#persona-sim" onclick="setActive(this,'measure')">
+      <span class="dot" style="background:var(--cat-measure)"></span>페르소나 시뮬레이션
+    </a>
+    <a class="sidebar-item" href="#ga4" onclick="setActive(this,'measure')">
+      <span class="dot" style="background:var(--cat-measure)"></span>GA4 연계 측정
+    </a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-cat">전략</div>
+    <a class="sidebar-item" href="#full-funnel" onclick="setActive(this,'strategy')">
+      <span class="dot" style="background:var(--cat-strategy)"></span>Full Funnel 구조
+    </a>
+    <a class="sidebar-item" href="#pdp" onclick="setActive(this,'strategy')">
+      <span class="dot" style="background:var(--cat-strategy)"></span>PDP 전환 연계
+    </a>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ══════════════════════════════
+     ZERO-CLICK
+══════════════════════════════ -->
+<div class="concept" id="zero-click">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-why-bg);color:var(--cat-why)">● 왜 GEO인가</span>
+      <div class="concept-title">Zero-click</div>
+      <div class="concept-sub">검색의 종말 — 사용자가 웹사이트에 오지 않는다</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">사용자가 Google에 "SUV 타이어 추천"을 검색했다. <strong>웹사이트를 클릭하지 않아도</strong> 원하는 정보를 얻을 수 있다면, 그들은 클릭할까?</div>
+    </div>
+
+    <p>AI Overview, Perplexity, ChatGPT는 질문을 받으면 웹을 크롤링해 직접 답변을 생성한다. 사용자는 링크를 클릭하지 않아도 된다. 이것이 Zero-click이다.</p>
+
+    <div class="diagram">
+      <div class="diagram-title">검색 행동의 변화</div>
+      <svg viewBox="0 0 680 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px">
+        <!-- OLD -->
+        <rect x="10" y="20" width="290" height="140" rx="10" fill="#F8F7FF" stroke="#C7D2FE" stroke-width="1.5"/>
+        <text x="155" y="44" text-anchor="middle" font-size="11" fill="#6366F1" font-family="Space Mono" letter-spacing="1">BEFORE</text>
+        <rect x="30" y="56" width="250" height="28" rx="6" fill="white" stroke="#E2E8F0" stroke-width="1"/>
+        <text x="55" y="75" font-size="12" fill="#333">🔍 SUV 타이어 추천</text>
+        <text x="155" y="108" text-anchor="middle" font-size="11" fill="#999">↓ 검색 결과 10개</text>
+        <text x="155" y="128" text-anchor="middle" font-size="11" fill="#999">↓ 링크 클릭</text>
+        <text x="155" y="148" text-anchor="middle" font-size="12" fill="#333" font-weight="bold">웹사이트 방문</text>
+
+        <!-- arrow -->
+        <text x="340" y="100" text-anchor="middle" font-size="22" fill="#CBD5E1">→</text>
+
+        <!-- NEW -->
+        <rect x="380" y="20" width="290" height="140" rx="10" fill="#ECFEFF" stroke="#67E8F9" stroke-width="1.5"/>
+        <text x="525" y="44" text-anchor="middle" font-size="11" fill="#0891B2" font-family="Space Mono" letter-spacing="1">NOW</text>
+        <rect x="400" y="56" width="250" height="28" rx="6" fill="white" stroke="#E2E8F0" stroke-width="1"/>
+        <text x="425" y="75" font-size="12" fill="#333">💬 SUV 타이어 추천해줘</text>
+        <text x="525" y="108" text-anchor="middle" font-size="11" fill="#999">↓ AI가 직접 답변 생성</text>
+        <rect x="400" y="118" width="250" height="30" rx="6" fill="#0891B2"/>
+        <text x="525" y="138" text-anchor="middle" font-size="12" fill="white" font-weight="bold">클릭 없이 정보 획득</text>
+      </svg>
+    </div>
+
+    <div class="misconception">
+      <div class="misconception-label">⚠ 오개념 교정</div>
+      <div class="misconception-row">
+        <div class="mc-wrong">
+          <span class="mc-badge">❌ 흔한 오해</span>
+          "Zero-click이면 웹사이트 트래픽이 줄어서 나쁜 거 아냐?"
+        </div>
+        <div class="mc-right">
+          <span class="mc-badge">✓ 정확한 이해</span>
+          AI가 브랜드를 언급하면 → 브랜드 검색량 증가 → 직접 방문 증가. AI 언급이 상위 퍼널 역할을 한다. 문제는 트래픽이 아니라 <strong>AI 답변에 포함되느냐</strong>다.
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight teal">
+      <span class="hl-label">왜 지금인가</span>
+      Google AI Overview는 전체 검색의 25%에 노출. 제품·서비스 탐색 시 55%가 AI로 검색 대체(McKinsey, 2025.8). AI가 추천한 제품의 구매 의향은 58%(adMarketplace, 2025.10). 이미 임계점을 넘었다.
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('geo-vs-seo')">GEO vs SEO</span>
+      <span class="conn-chip" onclick="scrollTo('entity-authority')">Entity Authority</span>
+      <span class="conn-chip" onclick="scrollTo('kpi-map')">KPI 측정</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     GEO VS SEO
+══════════════════════════════ -->
+<div class="concept" id="geo-vs-seo">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-why-bg);color:var(--cat-why)">● 왜 GEO인가</span>
+      <div class="concept-title">GEO ≠ SEO의 대체제</div>
+      <div class="concept-sub">SEO 기반이 견고해야 GEO가 작동한다</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">AI도 결국 웹을 읽는다. <strong>SEO가 안 된 사이트는 AI에게도 보이지 않는다.</strong> 그렇다면 GEO는 SEO를 대체하는가, 확장하는가?</div>
+    </div>
+
+    <table class="cmp-table">
+      <thead>
+        <tr><th>구분</th><th>SEO</th><th>GEO</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>타겟</strong></td><td>구글·네이버 검색 알고리즘</td><td>AI (LLM, AI Agent)</td></tr>
+        <tr><td><strong>목표</strong></td><td>검색 결과 순위 (1~10위)</td><td>AI 답변 내 언급·인용</td></tr>
+        <tr><td><strong>핵심 전략</strong></td><td>키워드·백링크·기술 구조</td><td>구조화 데이터·권위·신뢰도</td></tr>
+        <tr><td><strong>측정 지표</strong></td><td>클릭수·순위·노출수</td><td>Citation Rate·Share of Voice</td></tr>
+        <tr><td><strong>결과물</strong></td><td>검색 결과 클릭 후 탐색</td><td>AI가 브랜드를 추천</td></tr>
+      </tbody>
+    </table>
+
+    <div class="misconception">
+      <div class="misconception-label">⚠ 오개념 교정 — MAD 소개서에도 명시된 핵심</div>
+      <div class="misconception-row">
+        <div class="mc-wrong">
+          <span class="mc-badge">❌ 흔한 오해</span>
+          "SEO는 구식이고, 이제 GEO만 하면 된다."
+        </div>
+        <div class="mc-right">
+          <span class="mc-badge">✓ 정확한 이해</span>
+          AI도 크롤러를 통해 웹을 수집한다. robots.txt가 막혀있거나, 페이지 로딩이 느리거나, 사이트맵이 없으면 AI도 해당 사이트를 읽지 못한다. <strong>SEO 기반이 견고해야 GEO가 작동한다.</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">GEO는 SEO 위에 쌓인다</div>
+      <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:600px">
+        <rect x="40" y="140" width="520" height="50" rx="8" fill="#E0E7FF"/>
+        <text x="300" y="162" text-anchor="middle" font-size="13" fill="#3730A3" font-weight="bold">SEO 기반</text>
+        <text x="300" y="180" text-anchor="middle" font-size="11" fill="#6366F1">크롤링 허용 · 사이트맵 · 페이지 속도 · 도메인 권위</text>
+
+        <rect x="100" y="80" width="400" height="50" rx="8" fill="#ECFEFF"/>
+        <text x="300" y="102" text-anchor="middle" font-size="13" fill="#0E7490" font-weight="bold">GEO 온드 최적화</text>
+        <text x="300" y="120" text-anchor="middle" font-size="11" fill="#0891B2">Schema Markup · Answer Capsule · llms.txt · EEAT</text>
+
+        <rect x="180" y="20" width="240" height="50" rx="8" fill="#FAF5FF"/>
+        <text x="300" y="42" text-anchor="middle" font-size="13" fill="#7E22CE" font-weight="bold">GEO 언드 확장</text>
+        <text x="300" y="60" text-anchor="middle" font-size="11" fill="#9333EA">Earned Media · Entity Authority · 커뮤니티 언급</text>
+
+        <!-- arrows -->
+        <line x1="300" y1="70" x2="300" y2="80" stroke="#CBD5E1" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="300" y1="130" x2="300" y2="140" stroke="#CBD5E1" stroke-width="2" marker-end="url(#arr)"/>
+        <defs>
+          <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#CBD5E1"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('crawling')">크롤링 & 접근성</span>
+      <span class="conn-chip" onclick="scrollTo('schema')">Schema Markup</span>
+      <span class="conn-chip" onclick="scrollTo('earned-media')">Earned Media</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     CRAWLING
+══════════════════════════════ -->
+<div class="concept" id="crawling">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-tech-bg);color:var(--cat-tech)">● 기술 기반</span>
+      <div class="concept-title">크롤링 & 접근성</div>
+      <div class="concept-sub">AI가 들어올 수 없으면 아무 의미 없다</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">아무리 좋은 콘텐츠를 만들어도 AI 크롤러가 사이트에 접근하지 못하면? <strong>GEO는 시작조차 안 된다.</strong></div>
+    </div>
+
+    <p>AI 엔진들은 각자의 크롤러를 운영한다. robots.txt에서 이 봇들을 허용해야 콘텐츠가 수집된다.</p>
+
+    <div class="diagram">
+      <div class="diagram-title">주요 AI 크롤러 목록</div>
+      <table class="cmp-table" style="margin:0">
+        <thead><tr><th>AI 서비스</th><th>크롤러 이름</th><th>허용 방법</th></tr></thead>
+        <tbody>
+          <tr><td>ChatGPT (OpenAI)</td><td>GPTBot</td><td>User-agent: GPTBot / Allow: /</td></tr>
+          <tr><td>Claude (Anthropic)</td><td>ClaudeBot</td><td>User-agent: ClaudeBot / Allow: /</td></tr>
+          <tr><td>Perplexity</td><td>PerplexityBot</td><td>User-agent: PerplexityBot / Allow: /</td></tr>
+          <tr><td>Google (AI Overview)</td><td>Googlebot</td><td>기존 SEO 설정으로 허용됨</td></tr>
+          <tr><td>Meta (Llama)</td><td>meta-externalagent</td><td>User-agent: meta-externalagent / Allow: /</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>sitemap.xml이 중요한 이유</h4>
+    <p>크롤러가 사이트에 접근할 수 있어도, 어떤 페이지가 중요한지 모르면 비효율적으로 수집한다. sitemap.xml은 "이 페이지들을 우선 읽어라"고 크롤러에게 알려주는 지도다.</p>
+
+    <div class="highlight teal">
+      <span class="hl-label">실무 체크포인트</span>
+      robots.txt에서 AI 크롤러 허용 여부 확인 → sitemap.xml 존재 및 최신 상태 확인 → Google Search Console에서 크롤링 오류 확인. 이 세 가지가 GEO의 최우선 기술 기반이다.
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('llms-txt')">llms.txt</span>
+      <span class="conn-chip" onclick="scrollTo('cwv')">Core Web Vitals</span>
+      <span class="conn-chip" onclick="scrollTo('schema')">Schema Markup</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCHEMA / JSON-LD
+══════════════════════════════ -->
+<div class="concept" id="schema">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-tech-bg);color:var(--cat-tech)">● 기술 기반</span>
+      <div class="concept-title">Schema.org / JSON-LD</div>
+      <div class="concept-sub">AI가 "이 페이지가 무엇인지" 이해하는 언어</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">사람은 HTML을 읽고 "이건 제품 페이지구나" 이해한다. AI는? <strong>명시적으로 알려주지 않으면 추측한다.</strong> 추측은 틀릴 수 있다.</div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">개념 구조 — 세 가지를 구분하라</div>
+      <svg viewBox="0 0 660 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:660px">
+        <rect x="10" y="20" width="190" height="100" rx="10" fill="#EEF2FF" stroke="#A5B4FC" stroke-width="1.5"/>
+        <text x="105" y="48" text-anchor="middle" font-size="12" fill="#4F46E5" font-weight="bold">Schema.org</text>
+        <text x="105" y="68" text-anchor="middle" font-size="11" fill="#666">어휘 체계 (표준 사전)</text>
+        <text x="105" y="86" text-anchor="middle" font-size="11" fill="#666">"Person이란 무엇인가"</text>
+        <text x="105" y="104" text-anchor="middle" font-size="11" fill="#666">를 정의하는 곳</text>
+
+        <text x="230" y="76" text-anchor="middle" font-size="18" fill="#CBD5E1">+</text>
+
+        <rect x="250" y="20" width="190" height="100" rx="10" fill="#ECFEFF" stroke="#67E8F9" stroke-width="1.5"/>
+        <text x="345" y="48" text-anchor="middle" font-size="12" fill="#0891B2" font-weight="bold">JSON-LD</text>
+        <text x="345" y="68" text-anchor="middle" font-size="11" fill="#666">구현 형식 (포맷)</text>
+        <text x="345" y="86" text-anchor="middle" font-size="11" fill="#666">Schema.org 어휘를</text>
+        <text x="345" y="104" text-anchor="middle" font-size="11" fill="#666">&lt;script&gt;로 삽입</text>
+
+        <text x="470" y="76" text-anchor="middle" font-size="18" fill="#CBD5E1">=</text>
+
+        <rect x="490" y="20" width="160" height="100" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1.5"/>
+        <text x="570" y="48" text-anchor="middle" font-size="12" fill="#059669" font-weight="bold">Schema Markup</text>
+        <text x="570" y="68" text-anchor="middle" font-size="11" fill="#666">실제 구현 결과물</text>
+        <text x="570" y="86" text-anchor="middle" font-size="11" fill="#666">JSON-LD로 작성된</text>
+        <text x="570" y="104" text-anchor="middle" font-size="11" fill="#666">구조화 데이터 코드</text>
+      </svg>
+    </div>
+
+    <div class="misconception">
+      <div class="misconception-label">⚠ 오개념 교정</div>
+      <div class="misconception-row">
+        <div class="mc-wrong">
+          <span class="mc-badge">❌ 흔한 오해</span>
+          "Schema.org, JSON-LD, Schema Markup이 다 같은 말 아냐?"
+        </div>
+        <div class="mc-right">
+          <span class="mc-badge">✓ 정확한 이해</span>
+          Schema.org = 언어(단어장), JSON-LD = 그 언어로 쓰는 문법, Schema Markup = 최종 작성된 코드. 영어(언어) + 에세이 형식(문법) + 실제 에세이(결과물)의 관계와 같다.
+        </div>
+      </div>
+    </div>
+
+    <h4>GEO에서 우선순위가 높은 Schema 타입</h4>
+    <table class="cmp-table">
+      <thead><tr><th>타입</th><th>용도</th><th>GEO 효과</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Organization</strong></td><td>브랜드 기본 정보</td><td>AI가 브랜드 엔티티를 명확히 인식</td></tr>
+        <tr><td><strong>FAQPage</strong></td><td>자주 묻는 질문</td><td>AI 답변에 직접 인용될 확률 최고</td></tr>
+        <tr><td><strong>Product</strong></td><td>제품 스펙·리뷰·가격</td><td>KBF 필터링 프롬프트에서 호출</td></tr>
+        <tr><td><strong>Article / BlogPosting</strong></td><td>콘텐츠·블로그</td><td>EEAT 신호 강화, 발행일 명시</td></tr>
+        <tr><td><strong>HowTo</strong></td><td>사용법·가이드</td><td>정보형 프롬프트 인용 확률 ↑</td></tr>
+      </tbody>
+    </table>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('llms-txt')">llms.txt</span>
+      <span class="conn-chip" onclick="scrollTo('entity-authority')">Entity Authority</span>
+      <span class="conn-chip" onclick="scrollTo('dual-layer')">이중 레이어 설계</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     LLMS.TXT
+══════════════════════════════ -->
+<div class="concept" id="llms-txt">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-tech-bg);color:var(--cat-tech)">● 기술 기반</span>
+      <div class="concept-title">llms.txt</div>
+      <div class="concept-sub">AI 크롤러를 위한 브랜드 명함 — 경쟁사 4사 모두 없음</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">robots.txt가 "어디에 접근해도 되는가"를 알려준다면, llms.txt는 <strong>"우리 브랜드를 어떻게 이해하면 되는가"</strong>를 AI에게 직접 알려주는 문서다.</div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">robots.txt vs llms.txt 비교</div>
+      <svg viewBox="0 0 620 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:620px">
+        <rect x="10" y="15" width="280" height="100" rx="10" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>
+        <text x="150" y="40" text-anchor="middle" font-size="12" fill="#475569" font-weight="bold">robots.txt</text>
+        <text x="150" y="62" text-anchor="middle" font-size="11" fill="#64748B">크롤러에게 접근 허용/차단 안내</text>
+        <text x="150" y="82" text-anchor="middle" font-size="11" fill="#64748B">"이 페이지는 읽어도 돼"</text>
+        <text x="150" y="102" text-anchor="middle" font-size="11" fill="#64748B">모든 크롤러 대상</text>
+
+        <rect x="330" y="15" width="280" height="100" rx="10" fill="#ECFEFF" stroke="#67E8F9" stroke-width="1.5"/>
+        <text x="470" y="40" text-anchor="middle" font-size="12" fill="#0E7490" font-weight="bold">llms.txt</text>
+        <text x="470" y="62" text-anchor="middle" font-size="11" fill="#0891B2">AI에게 브랜드 맥락 직접 제공</text>
+        <text x="470" y="82" text-anchor="middle" font-size="11" fill="#0891B2">"우리는 이런 브랜드야"</text>
+        <text x="470" y="102" text-anchor="middle" font-size="11" fill="#0891B2">LLM 크롤러 전용</text>
+      </svg>
+    </div>
+
+    <h4>llms.txt에 들어가는 내용</h4>
+    <ul>
+      <li><strong>브랜드 정의</strong> — 한 문단으로 브랜드가 무엇을 하는 회사인지</li>
+      <li><strong>핵심 제품/서비스 목록</strong> — AI가 질문을 받았을 때 연결할 수 있도록</li>
+      <li><strong>주요 CEP 키워드</strong> — 우리 브랜드가 호출되어야 하는 상황들</li>
+      <li><strong>신뢰 시그널</strong> — 수상 이력, 주요 고객사, 인증 등</li>
+      <li><strong>중요 URL 목록</strong> — 제품 페이지, FAQ, 대표 콘텐츠</li>
+    </ul>
+
+    <div class="highlight teal">
+      <span class="hl-label">선점 기회</span>
+      넥센타이어, 한국타이어, 금호타이어, 미쉐린 — 4사 모두 llms.txt 없음. 1~2주 내 구현 가능한 작업으로, 경쟁사 대비 즉각적인 선점 효과를 낼 수 있는 항목이다.
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('crawling')">크롤링 & 접근성</span>
+      <span class="conn-chip" onclick="scrollTo('entity-authority')">Entity Authority</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     CORE WEB VITALS
+══════════════════════════════ -->
+<div class="concept" id="cwv">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-tech-bg);color:var(--cat-tech)">● 기술 기반</span>
+      <div class="concept-title">Core Web Vitals</div>
+      <div class="concept-sub">페이지 경험이 나쁘면 AI도 기피한다</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">AI 크롤러도 로딩이 느린 페이지를 수집할 때 비용이 발생한다. <strong>느린 사이트는 크롤링 우선순위에서 밀린다.</strong></div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">Core Web Vitals 3가지 지표</div>
+      <svg viewBox="0 0 620 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:620px">
+        <rect x="10" y="15" width="185" height="90" rx="10" fill="#ECFEFF" stroke="#67E8F9" stroke-width="1.5"/>
+        <text x="102" y="42" text-anchor="middle" font-size="13" fill="#0E7490" font-weight="bold">LCP</text>
+        <text x="102" y="60" text-anchor="middle" font-size="10" fill="#0891B2">Largest Contentful Paint</text>
+        <text x="102" y="78" text-anchor="middle" font-size="11" fill="#333">가장 큰 콘텐츠 로드 속도</text>
+        <text x="102" y="96" text-anchor="middle" font-size="10" fill="#64748B">목표: 2.5초 이내</text>
+
+        <rect x="217" y="15" width="185" height="90" rx="10" fill="#ECFEFF" stroke="#67E8F9" stroke-width="1.5"/>
+        <text x="309" y="42" text-anchor="middle" font-size="13" fill="#0E7490" font-weight="bold">CLS</text>
+        <text x="309" y="60" text-anchor="middle" font-size="10" fill="#0891B2">Cumulative Layout Shift</text>
+        <text x="309" y="78" text-anchor="middle" font-size="11" fill="#333">레이아웃 안정성</text>
+        <text x="309" y="96" text-anchor="middle" font-size="10" fill="#64748B">목표: 0.1 이하</text>
+
+        <rect x="424" y="15" width="185" height="90" rx="10" fill="#ECFEFF" stroke="#67E8F9" stroke-width="1.5"/>
+        <text x="516" y="42" text-anchor="middle" font-size="13" fill="#0E7490" font-weight="bold">INP</text>
+        <text x="516" y="60" text-anchor="middle" font-size="10" fill="#0891B2">Interaction to Next Paint</text>
+        <text x="516" y="78" text-anchor="middle" font-size="11" fill="#333">인터랙션 응답 속도</text>
+        <text x="516" y="96" text-anchor="middle" font-size="10" fill="#64748B">목표: 200ms 이내</text>
+      </svg>
+    </div>
+
+    <div class="highlight teal">
+      <span class="hl-label">GEO와의 직접 연결</span>
+      Google AI Overview는 Google 검색 품질 기준을 그대로 적용한다. Core Web Vitals 점수가 낮은 페이지는 검색 순위에서 내려가고, AI Overview에서도 인용 우선순위가 낮아진다. PageSpeed Insights에서 점수 확인 → 개선 항목 파악이 즉시 실행 가능한 첫 단계.
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('crawling')">크롤링 & 접근성</span>
+      <span class="conn-chip" onclick="scrollTo('canonical')">Canonical & 중복</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     CANONICAL
+══════════════════════════════ -->
+<div class="concept" id="canonical">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-tech-bg);color:var(--cat-tech)">● 기술 기반</span>
+      <div class="concept-title">Canonical 태그 & 중복 콘텐츠</div>
+      <div class="concept-sub">AI가 동일한 정보를 분산 인식하지 않도록</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">동일한 내용이 여러 URL에 존재하면 AI는 어느 페이지를 신뢰해야 할지 모른다. <strong>권위가 분산되면 어느 페이지도 인용되지 않는다.</strong></div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">중복 콘텐츠 문제와 해결</div>
+      <svg viewBox="0 0 620 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:620px">
+        <!-- problem -->
+        <rect x="10" y="10" width="265" height="140" rx="10" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.5"/>
+        <text x="142" y="36" text-anchor="middle" font-size="11" fill="#DC2626" font-family="Space Mono">문제 상황</text>
+        <rect x="30" y="50" width="225" height="26" rx="5" fill="white" stroke="#FCA5A5"/>
+        <text x="142" y="68" text-anchor="middle" font-size="11" fill="#666">/product/tire-a</text>
+        <rect x="30" y="84" width="225" height="26" rx="5" fill="white" stroke="#FCA5A5"/>
+        <text x="142" y="102" text-anchor="middle" font-size="11" fill="#666">/kr/product/tire-a</text>
+        <rect x="30" y="118" width="225" height="26" rx="5" fill="white" stroke="#FCA5A5"/>
+        <text x="142" y="136" text-anchor="middle" font-size="11" fill="#666">/product/tire-a?utm_source=kakao</text>
+        <text x="142" y="150" text-anchor="middle" font-size="10" fill="#DC2626">← 동일 내용, AI가 권위 분산 인식</text>
+
+        <text x="310" y="88" text-anchor="middle" font-size="22" fill="#CBD5E1">→</text>
+
+        <!-- solution -->
+        <rect x="345" y="10" width="265" height="140" rx="10" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+        <text x="477" y="36" text-anchor="middle" font-size="11" fill="#16A34A" font-family="Space Mono">해결책</text>
+        <rect x="365" y="50" width="225" height="26" rx="5" fill="white" stroke="#86EFAC"/>
+        <text x="477" y="68" text-anchor="middle" font-size="11" fill="#333" font-weight="bold">/product/tire-a (대표 URL)</text>
+        <text x="477" y="100" text-anchor="middle" font-size="11" fill="#64748B">&lt;link rel="canonical"</text>
+        <text x="477" y="116" text-anchor="middle" font-size="11" fill="#16A34A">href="/product/tire-a" /&gt;</text>
+        <text x="477" y="140" text-anchor="middle" font-size="10" fill="#16A34A">← 모든 페이지에 대표 URL 지정</text>
+      </svg>
+    </div>
+
+    <div class="highlight teal">
+      <span class="hl-label">실무 포인트</span>
+      UTM 파라미터가 붙은 URL, www/non-www 혼용, http/https 혼용, 모바일/PC 별도 URL이 모두 중복 콘텐츠 문제를 일으킬 수 있다. Google Search Console의 "URL 검사" 도구로 canonical 설정 확인 가능.
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('cwv')">Core Web Vitals</span>
+      <span class="conn-chip" onclick="scrollTo('schema')">Schema Markup</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ANSWER CAPSULE
+══════════════════════════════ -->
+<div class="concept" id="answer-capsule">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-content-bg);color:var(--cat-content)">● 콘텐츠 구축</span>
+      <div class="concept-title">Answer Capsule</div>
+      <div class="concept-sub">AI가 그대로 발췌해 쓸 수 있는 단락 설계</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">AI는 글 전체를 읽지 않는다. <strong>필요한 부분만 발췌</strong>해서 답변을 구성한다. 발췌되기 좋은 단락을 설계하는 것이 Answer Capsule이다.</div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">Answer Capsule 4원칙</div>
+      <svg viewBox="0 0 660 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:660px">
+        <rect x="10" y="10" width="300" height="84" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1.5"/>
+        <circle cx="38" cy="36" r="14" fill="#059669"/>
+        <text x="38" y="41" text-anchor="middle" font-size="13" fill="white" font-weight="bold">1</text>
+        <text x="60" y="33" font-size="13" fill="#065F46" font-weight="bold">핵심 답변 먼저</text>
+        <text x="26" y="56" font-size="11" fill="#333">결론 → 근거 → 부연 순서로 작성.</text>
+        <text x="26" y="72" font-size="11" fill="#333">AI는 첫 문장을 가장 많이 인용한다.</text>
+        <text x="26" y="86" font-size="10" fill="#059669">결론 선행 구조 (Answer-first)</text>
+
+        <rect x="330" y="10" width="300" height="84" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1.5"/>
+        <circle cx="358" cy="36" r="14" fill="#059669"/>
+        <text x="358" y="41" text-anchor="middle" font-size="13" fill="white" font-weight="bold">2</text>
+        <text x="380" y="33" font-size="13" fill="#065F46" font-weight="bold">수치·조건 포함</text>
+        <text x="346" y="56" font-size="11" fill="#333">"~% 개선", "~일 이내" 등 구체적</text>
+        <text x="346" y="72" font-size="11" fill="#333">수치가 있는 문장이 인용 가능성 높음</text>
+        <text x="346" y="86" font-size="10" fill="#059669">구체성 확보</text>
+
+        <rect x="10" y="110" width="300" height="84" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1.5"/>
+        <circle cx="38" cy="136" r="14" fill="#059669"/>
+        <text x="38" y="141" text-anchor="middle" font-size="13" fill="white" font-weight="bold">3</text>
+        <text x="60" y="133" font-size="13" fill="#065F46" font-weight="bold">질문형 소제목</text>
+        <text x="26" y="156" font-size="11" fill="#333">"OOO란?", "OOO의 장점은?"</text>
+        <text x="26" y="172" font-size="11" fill="#333">AI의 Query Fanout 패턴에 맞춤</text>
+        <text x="26" y="186" font-size="10" fill="#059669">Query Fanout 대응 →</text>
+
+        <rect x="330" y="110" width="300" height="84" rx="10" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1.5"/>
+        <circle cx="358" cy="136" r="14" fill="#059669"/>
+        <text x="358" y="141" text-anchor="middle" font-size="13" fill="white" font-weight="bold">4</text>
+        <text x="380" y="133" font-size="13" fill="#065F46" font-weight="bold">단락 독립성</text>
+        <text x="346" y="156" font-size="11" fill="#333">각 단락이 독립적으로 읽혀야 함.</text>
+        <text x="346" y="172" font-size="11" fill="#333">AI는 문서 일부만 발췌해 답변 생성</text>
+        <text x="346" y="186" font-size="10" fill="#059669">발췌 최적화</text>
+      </svg>
+    </div>
+
+    <div class="misconception">
+      <div class="misconception-label">⚠ 오개념 교정</div>
+      <div class="misconception-row">
+        <div class="mc-wrong">
+          <span class="mc-badge">❌ 흔한 오해</span>
+          "길고 자세하게 잘 쓴 글이 AI에게 더 잘 인용된다."
+        </div>
+        <div class="mc-right">
+          <span class="mc-badge">✓ 정확한 이해</span>
+          AI는 '잘 쓴 글'이 아니라 <strong>발췌하기 쉬운 글</strong>을 선택한다. 5000자 완성도 높은 글 한 편보다, 각각 독립적으로 완결된 300자짜리 Answer Capsule 10개가 더 많이 인용된다.
+        </div>
+      </div>
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('query-fanout')">Query Fanout</span>
+      <span class="conn-chip" onclick="scrollTo('dual-layer')">이중 레이어 설계</span>
+      <span class="conn-chip" onclick="scrollTo('schema')">FAQPage Schema</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     QUERY FANOUT
+══════════════════════════════ -->
+<div class="concept" id="query-fanout">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-content-bg);color:var(--cat-content)">● 콘텐츠 구축</span>
+      <div class="concept-title">Query Fanout</div>
+      <div class="concept-sub">AI는 질문 하나를 여러 하위 질문으로 분해한다</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">"SUV 타이어 추천해줘"라는 단순한 질문. AI는 이걸 그대로 처리하지 않는다. <strong>여러 하위 질문으로 분해하고 각각 답을 찾아 조합</strong>해서 답변을 만든다.</div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">Query Fanout 시각화</div>
+      <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:640px">
+        <!-- root query -->
+        <rect x="190" y="10" width="220" height="40" rx="8" fill="#2B2875"/>
+        <text x="300" y="35" text-anchor="middle" font-size="12" fill="white" font-weight="bold">SUV 타이어 추천해줘</text>
+
+        <!-- lines -->
+        <line x1="300" y1="50" x2="120" y2="90" stroke="#CBD5E1" stroke-width="1.5"/>
+        <line x1="300" y1="50" x2="300" y2="90" stroke="#CBD5E1" stroke-width="1.5"/>
+        <line x1="300" y1="50" x2="480" y2="90" stroke="#CBD5E1" stroke-width="1.5"/>
+
+        <!-- sub queries -->
+        <rect x="20" y="90" width="200" height="36" rx="7" fill="#ECFDF5" stroke="#6EE7B7"/>
+        <text x="120" y="113" text-anchor="middle" font-size="11" fill="#065F46">SUV 타이어 주요 브랜드는?</text>
+
+        <rect x="200" y="90" width="200" height="36" rx="7" fill="#ECFDF5" stroke="#6EE7B7"/>
+        <text x="300" y="113" text-anchor="middle" font-size="11" fill="#065F46">SUV 타이어 선택 기준은?</text>
+
+        <rect x="420" y="90" width="200" height="36" rx="7" fill="#ECFDF5" stroke="#6EE7B7"/>
+        <text x="520" y="113" text-anchor="middle" font-size="11" fill="#065F46">가격대별 추천은?</text>
+
+        <!-- answers from web -->
+        <line x1="120" y1="126" x2="120" y2="155" stroke="#CBD5E1" stroke-width="1.5"/>
+        <line x1="300" y1="126" x2="300" y2="155" stroke="#CBD5E1" stroke-width="1.5"/>
+        <line x1="520" y1="126" x2="520" y2="155" stroke="#CBD5E1" stroke-width="1.5"/>
+
+        <rect x="20" y="155" width="200" height="30" rx="6" fill="#EEF2FF" stroke="#A5B4FC"/>
+        <text x="120" y="175" text-anchor="middle" font-size="10" fill="#4338CA">웹에서 답변 수집</text>
+
+        <rect x="200" y="155" width="200" height="30" rx="6" fill="#EEF2FF" stroke="#A5B4FC"/>
+        <text x="300" y="175" text-anchor="middle" font-size="10" fill="#4338CA">웹에서 답변 수집</text>
+
+        <rect x="420" y="155" width="200" height="30" rx="6" fill="#EEF2FF" stroke="#A5B4FC"/>
+        <text x="520" y="175" text-anchor="middle" font-size="10" fill="#4338CA">웹에서 답변 수집</text>
+
+        <!-- synthesis -->
+        <line x1="120" y1="185" x2="300" y2="205" stroke="#CBD5E1" stroke-width="1.5"/>
+        <line x1="300" y1="185" x2="300" y2="205" stroke="#CBD5E1" stroke-width="1.5"/>
+        <line x1="520" y1="185" x2="300" y2="205" stroke="#CBD5E1" stroke-width="1.5"/>
+        <rect x="170" y="205" width="260" height="12" rx="4" fill="#2B2875" opacity=".7"/>
+        <text x="300" y="215" text-anchor="middle" font-size="9" fill="white">종합 답변 생성</text>
+      </svg>
+    </div>
+
+    <p>GEO 관점에서 중요한 건, 이 하위 질문들 <strong>각각에 대한 답</strong>이 우리 사이트에 있어야 한다는 것이다. 그래서 질문형 소제목으로 콘텐츠를 설계하는 게 효과적이다.</p>
+
+    <div class="highlight green">
+      <span class="hl-label">콘텐츠 설계에 적용하기</span>
+      "타이어 추천"을 검색하는 사람이 실제로 궁금한 하위 질문을 리스팅마인드나 Google Autocomplete로 뽑아 → 각 질문을 소제목으로 → 각 소제목 아래에 독립적으로 읽히는 Answer Capsule 작성. 이것이 CEP 기반 콘텐츠 설계의 실행 단위다.
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('answer-capsule')">Answer Capsule</span>
+      <span class="conn-chip" onclick="scrollTo('entity-authority')">Entity Authority</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ENTITY AUTHORITY
+══════════════════════════════ -->
+<div class="concept" id="entity-authority">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-content-bg);color:var(--cat-content)">● 콘텐츠 구축</span>
+      <div class="concept-title">Entity Authority</div>
+      <div class="concept-sub">AI 지식 그래프에 브랜드를 등록하는 일</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">AI가 "넥센타이어"를 인식할 때, 단순한 <strong>키워드</strong>로 인식하는가 아니면 <strong>엔티티(의미 있는 개체)</strong>로 인식하는가? 둘의 차이가 AI 인용 빈도를 결정한다.</div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">Entity Authority 4채널 구조</div>
+      <svg viewBox="0 0 560 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:560px">
+        <!-- center -->
+        <circle cx="280" cy="140" r="52" fill="#2B2875"/>
+        <text x="280" y="133" text-anchor="middle" font-size="12" fill="white" font-weight="bold">AI는 브랜드를</text>
+        <text x="280" y="151" text-anchor="middle" font-size="12" fill="#A5B4FC" font-weight="bold">엔티티로 인식</text>
+
+        <!-- top: wikipedia -->
+        <rect x="170" y="10" width="220" height="60" rx="10" fill="#EEF2FF" stroke="#A5B4FC"/>
+        <text x="280" y="34" text-anchor="middle" font-size="11" fill="#4F46E5" font-weight="bold">EARNED — Wikipedia · 나무위키</text>
+        <text x="280" y="52" text-anchor="middle" font-size="10" fill="#666">중립적 사실 기반 브랜드 문서</text>
+        <text x="280" y="64" text-anchor="middle" font-size="10" fill="#4F46E5">Entity 신뢰도의 핵심 소스</text>
+        <line x1="280" y1="70" x2="280" y2="88" stroke="#CBD5E1" stroke-width="1.5"/>
+
+        <!-- left: owned -->
+        <rect x="20" y="100" width="180" height="80" rx="10" fill="#ECFDF5" stroke="#6EE7B7"/>
+        <text x="110" y="124" text-anchor="middle" font-size="11" fill="#059669" font-weight="bold">OWNED — 온드 미디어</text>
+        <text x="110" y="142" text-anchor="middle" font-size="10" fill="#666">공식 사이트 · 블로그</text>
+        <text x="110" y="158" text-anchor="middle" font-size="10" fill="#666">Schema + 구조화 직접 신호</text>
+        <line x1="200" y1="140" x2="228" y2="140" stroke="#CBD5E1" stroke-width="1.5"/>
+
+        <!-- right: press -->
+        <rect x="360" y="100" width="180" height="80" rx="10" fill="#FAF5FF" stroke="#C4B5FD"/>
+        <text x="450" y="124" text-anchor="middle" font-size="11" fill="#7E22CE" font-weight="bold">EARNED — 언론 · 매체</text>
+        <text x="450" y="142" text-anchor="middle" font-size="10" fill="#666">권위 있는 매체의 언급</text>
+        <text x="450" y="158" text-anchor="middle" font-size="10" fill="#666">인용 다양성 확보가 핵심</text>
+        <line x1="332" y1="140" x2="360" y2="140" stroke="#CBD5E1" stroke-width="1.5"/>
+
+        <!-- bottom: community -->
+        <rect x="170" y="210" width="220" height="60" rx="10" fill="#FFFBEB" stroke="#FCD34D"/>
+        <text x="280" y="234" text-anchor="middle" font-size="11" fill="#92400E" font-weight="bold">EARNED — 커뮤니티 · 사례</text>
+        <text x="280" y="252" text-anchor="middle" font-size="10" fill="#666">실사용자 리뷰 · 커뮤니티 언급</text>
+        <text x="280" y="264" text-anchor="middle" font-size="10" fill="#92400E">GEO 관점 신호 강화</text>
+        <line x1="280" y1="192" x2="280" y2="210" stroke="#CBD5E1" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <div class="misconception">
+      <div class="misconception-label">⚠ 오개념 교정</div>
+      <div class="misconception-row">
+        <div class="mc-wrong">
+          <span class="mc-badge">❌ 흔한 오해</span>
+          "우리 공식 사이트만 잘 관리하면 AI가 우리 브랜드를 알아볼 거야."
+        </div>
+        <div class="mc-right">
+          <span class="mc-badge">✓ 정확한 이해</span>
+          AI는 단일 소스를 신뢰하지 않는다. <strong>여러 독립적인 채널에서 동일한 브랜드 정보가 일관되게 언급될 때</strong> 엔티티로 인식한다. 온드 미디어 + 언론 + 커뮤니티 + Wikipedia의 4채널 교차 구조가 필요하다.
+        </div>
+      </div>
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('earned-media')">Earned Media</span>
+      <span class="conn-chip" onclick="scrollTo('schema')">Schema Organization</span>
+      <span class="conn-chip" onclick="scrollTo('llms-txt')">llms.txt</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     EARNED MEDIA
+══════════════════════════════ -->
+<div class="concept" id="earned-media">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-content-bg);color:var(--cat-content)">● 콘텐츠 구축</span>
+      <div class="concept-title">Earned Media & 백링크</div>
+      <div class="concept-sub">AI가 신뢰하는 건 "다른 곳에서 많이 인용된" 사이트</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">AI는 어떤 사이트를 신뢰할까? <strong>"다른 권위 있는 사이트들이 많이 링크한 곳"</strong>이다. 이것이 도메인 권위(Domain Authority)이고, Earned Media가 이를 만든다.</div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">Earned Media 전략 4단계</div>
+      <table class="cmp-table" style="margin:0">
+        <thead><tr><th>단계</th><th>무엇을</th><th>어떻게</th></tr></thead>
+        <tbody>
+          <tr><td>01</td><td><strong>내 도메인 권위 파악</strong></td><td>Ahrefs / Semrush로 현재 도메인 점수 진단 → 경쟁사 대비 격차 확인</td></tr>
+          <tr><td>02</td><td><strong>백링크 품질 확보</strong></td><td>업계 전문 매체, 협회·정부 사이트에 기고. 저품질 스팸 링크는 disavow</td></tr>
+          <tr><td>03</td><td><strong>비연결 언급도 자산</strong></td><td>언론, 인터뷰, 리뷰 사이트의 브랜드 언급 → 링크로 전환 시도</td></tr>
+          <tr><td>04</td><td><strong>경쟁사 백링크 추적</strong></td><td>경쟁사가 새로 얻은 링크 추적 → 동일 매체에 기고 기회 발굴</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight green">
+      <span class="hl-label">비연결 언급(Unlinked Mention)이란</span>
+      언론 기사나 블로그에서 브랜드명이 언급되었지만 링크가 없는 경우. SEO 관점에서 링크 없는 언급은 직접 효과가 없지만, GEO 관점에서는 AI가 텍스트 기반으로 브랜드를 인식하기 때문에 <strong>링크 없는 언급도 엔티티 신뢰도를 높인다.</strong> 단, 링크로 전환할 수 있다면 그게 더 좋다.
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('entity-authority')">Entity Authority</span>
+      <span class="conn-chip" onclick="scrollTo('kpi-map')">도메인 권위 측정</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     DUAL LAYER
+══════════════════════════════ -->
+<div class="concept" id="dual-layer">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-content-bg);color:var(--cat-content)">● 콘텐츠 구축</span>
+      <div class="concept-title">이중 레이어 설계</div>
+      <div class="concept-sub">하나의 URL에서 사람과 AI를 동시에 설득</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">사람이 읽기 좋은 페이지와 AI가 읽기 좋은 페이지는 다르다. 그런데 URL은 하나다. <strong>같은 페이지에서 두 목적을 동시에 달성</strong>할 수 있을까?</div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">동일 URL, 두 가지 레이어</div>
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:640px">
+        <rect x="230" y="10" width="160" height="34" rx="8" fill="#1C1A2E"/>
+        <text x="310" y="32" text-anchor="middle" font-size="12" fill="white" font-weight="bold">🌐 동일 URL</text>
+
+        <line x1="250" y1="44" x2="160" y2="74" stroke="#CBD5E1" stroke-width="1.5"/>
+        <line x1="370" y1="44" x2="460" y2="74" stroke="#CBD5E1" stroke-width="1.5"/>
+
+        <rect x="20" y="74" width="280" height="116" rx="10" fill="#EEF2FF" stroke="#A5B4FC" stroke-width="1.5"/>
+        <text x="36" y="96" font-size="11" fill="#4F46E5" font-weight="bold">👤 USER 설득 레이어</text>
+        <text x="36" y="116" font-size="11" fill="#555">• 비주얼 계층 구조 (H1→H2→H3)</text>
+        <text x="36" y="134" font-size="11" fill="#555">• 인터랙션 흐름 설계</text>
+        <text x="36" y="152" font-size="11" fill="#555">• 신뢰 신호 (리뷰, 수치, 보증)</text>
+        <text x="36" y="170" font-size="11" fill="#555">• CTA 배치 최적화</text>
+
+        <rect x="340" y="74" width="280" height="116" rx="10" fill="#1C1A2E" stroke="#4F46E5" stroke-width="1.5"/>
+        <text x="356" y="96" font-size="11" fill="#A5B4FC" font-weight="bold">🤖 AI 파싱 레이어</text>
+        <text x="356" y="116" font-size="11" fill="#ccc">• Q&A 기반 콘텐츠 구조</text>
+        <text x="356" y="134" font-size="11" fill="#ccc">• 엔티티 & 의미론적 마크업</text>
+        <text x="356" y="152" font-size="11" fill="#ccc">• Schema.org 구조화 데이터</text>
+        <text x="356" y="170" font-size="11" fill="#ccc">• AI 인용 가능한 Answer Capsule</text>
+      </svg>
+    </div>
+
+    <div class="highlight green">
+      <span class="hl-label">실무 적용 포인트</span>
+      HTML 본문은 사람이 읽기 좋게 작성 → &lt;script type="application/ld+json"&gt;으로 같은 내용을 구조화 데이터로 추가 삽입. 사람에게는 보이지 않지만 AI 크롤러는 읽는다. 충돌하지 않고 공존한다.
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('schema')">Schema / JSON-LD</span>
+      <span class="conn-chip" onclick="scrollTo('answer-capsule')">Answer Capsule</span>
+      <span class="conn-chip" onclick="scrollTo('pdp')">PDP 전환 연계</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     KPI MAP
+══════════════════════════════ -->
+<div class="concept" id="kpi-map">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-measure-bg);color:var(--cat-measure)">● 측정</span>
+      <div class="concept-title">KPI 전체 지도</div>
+      <div class="concept-sub">4가지 지표가 각각 다른 것을 측정한다</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">GEO 성과를 "AI에 언급됐습니다"로 보고하면 안 된다. <strong>얼마나, 어떻게, 어떤 순서로, 어떤 톤으로</strong> 언급되는지가 각각 다른 지표다.</div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">GEO 핵심 KPI 4종 — 무엇이 다른가</div>
+      <svg viewBox="0 0 660 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:660px">
+        <rect x="10" y="10" width="300" height="100" rx="10" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1.5"/>
+        <text x="26" y="34" font-size="12" fill="#92400E" font-weight="bold">01 Share of Voice (SoV)</text>
+        <text x="26" y="54" font-size="11" fill="#555">언급 횟수 ÷ 전체 질문 수</text>
+        <text x="26" y="72" font-size="11" fill="#555">ex. 30회 중 13회 언급 = 43%</text>
+        <text x="26" y="90" font-size="10" fill="#D97706">→ 경쟁사 대비 시장 점유율 파악</text>
+        <text x="26" y="104" font-size="10" fill="#D97706">   "우리가 얼마나 존재감 있는가"</text>
+
+        <rect x="330" y="10" width="300" height="100" rx="10" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1.5"/>
+        <text x="346" y="34" font-size="12" fill="#92400E" font-weight="bold">02 Citation Frequency</text>
+        <text x="346" y="54" font-size="11" fill="#555">AI 답변 하단 링크에 포함된 횟수</text>
+        <text x="346" y="72" font-size="11" fill="#555">SoV와 별도로 추적 (언급 ≠ 인용)</text>
+        <text x="346" y="90" font-size="10" fill="#D97706">→ "AI가 우리를 신뢰 소스로 채택했나"</text>
+        <text x="346" y="104" font-size="10" fill="#D97706">   Perplexity에서 특히 명확히 보임</text>
+
+        <rect x="10" y="130" width="300" height="100" rx="10" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1.5"/>
+        <text x="26" y="154" font-size="12" fill="#92400E" font-weight="bold">03 Sentiment Score</text>
+        <text x="26" y="174" font-size="11" fill="#555">언급될 때 긍정 / 중립 / 부정 비율</text>
+        <text x="26" y="192" font-size="11" fill="#555">NLP로 분류해 브랜드 인식 품질 정량화</text>
+        <text x="26" y="210" font-size="10" fill="#D97706">→ "언급됨"을 넘어 "어떻게 언급되나"</text>
+        <text x="26" y="224" font-size="10" fill="#D97706">   부정 언급은 SoV 높아도 나쁨</text>
+
+        <rect x="330" y="130" width="300" height="100" rx="10" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1.5"/>
+        <text x="346" y="154" font-size="12" fill="#92400E" font-weight="bold">04 Position Score</text>
+        <text x="346" y="174" font-size="11" fill="#555">AI 답변에서 브랜드가 언급되는 순서</text>
+        <text x="346" y="192" font-size="11" fill="#555">첫 번째 추천 vs 세 번째 추천</text>
+        <text x="346" y="210" font-size="10" fill="#D97706">→ "포지션을 개선하면 전환율까지 개선"</text>
+        <text x="346" y="224" font-size="10" fill="#D97706">   1위 추천의 구매 전환율이 3위의 2~3배</text>
+      </svg>
+    </div>
+
+    <div class="misconception">
+      <div class="misconception-label">⚠ 오개념 교정 — SoV vs SoM 용어 혼용</div>
+      <div class="misconception-row">
+        <div class="mc-wrong">
+          <span class="mc-badge">❌ 혼용 위험</span>
+          SoV(Share of Voice)와 SoM(Share of Mentions)을 같은 말처럼 쓰면 클라이언트가 헷갈린다.
+        </div>
+        <div class="mc-right">
+          <span class="mc-badge">✓ MAD 내부 정의 제안</span>
+          SoV = 우리 언급 비율 (전체 질문 대비). SoM = 경쟁사 포함 전체 브랜드 언급 중 우리 비율. 맥락에 따라 달리 쓸 수 있으나, 클라이언트 리포트에서는 정의를 명시하는 게 중요하다.
+        </div>
+      </div>
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('persona-sim')">페르소나 시뮬레이션</span>
+      <span class="conn-chip" onclick="scrollTo('ga4')">GA4 연계</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     PERSONA SIMULATION
+══════════════════════════════ -->
+<div class="concept" id="persona-sim">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-measure-bg);color:var(--cat-measure)">● 측정</span>
+      <div class="concept-title">에이전트 기반 페르소나 시뮬레이션</div>
+      <div class="concept-sub">AI 유저 데이터에 직접 접근할 수 없는 문제를 해결하는 방법</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">ChatGPT나 Perplexity의 사용자 데이터는 공개되지 않는다. 그러면 어떻게 "어떤 페르소나가 어떤 질문을 했을 때 우리 브랜드가 언급되는가"를 측정할 수 있을까?</div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">시뮬레이션 파이프라인</div>
+      <svg viewBox="0 0 640 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:640px">
+        <rect x="10" y="20" width="120" height="60" rx="8" fill="#FFFBEB" stroke="#FCD34D"/>
+        <text x="70" y="47" text-anchor="middle" font-size="11" fill="#92400E" font-weight="bold">Seed 키워드</text>
+        <text x="70" y="65" text-anchor="middle" font-size="10" fill="#666">핵심 키워드에서</text>
+        <text x="70" y="77" text-anchor="middle" font-size="10" fill="#666">SA 추출</text>
+
+        <text x="148" y="53" text-anchor="middle" font-size="16" fill="#FCD34D">→</text>
+
+        <rect x="165" y="20" width="120" height="60" rx="8" fill="#FFFBEB" stroke="#FCD34D"/>
+        <text x="225" y="47" text-anchor="middle" font-size="11" fill="#92400E" font-weight="bold">페르소나 설계</text>
+        <text x="225" y="65" text-anchor="middle" font-size="10" fill="#666">30대 워킹맘</text>
+        <text x="225" y="77" text-anchor="middle" font-size="10" fill="#666">20대 대학생 등</text>
+
+        <text x="303" y="53" text-anchor="middle" font-size="16" fill="#FCD34D">→</text>
+
+        <rect x="320" y="20" width="130" height="60" rx="8" fill="#FFFBEB" stroke="#FCD34D"/>
+        <text x="385" y="47" text-anchor="middle" font-size="11" fill="#92400E" font-weight="bold">Query Expansion</text>
+        <text x="385" y="65" text-anchor="middle" font-size="10" fill="#666">페르소나별</text>
+        <text x="385" y="77" text-anchor="middle" font-size="10" fill="#666">자연어 질문 변환</text>
+
+        <text x="467" y="53" text-anchor="middle" font-size="16" fill="#FCD34D">→</text>
+
+        <rect x="483" y="20" width="145" height="60" rx="8" fill="#FFFBEB" stroke="#FCD34D"/>
+        <text x="555" y="44" text-anchor="middle" font-size="11" fill="#92400E" font-weight="bold">표본 조사 실행</text>
+        <text x="555" y="61" text-anchor="middle" font-size="10" fill="#666">설계된 모수 기반</text>
+        <text x="555" y="74" text-anchor="middle" font-size="10" fill="#D97706">노출률 계량 → SoV</text>
+      </svg>
+    </div>
+
+    <p>각 페르소나당 대표 질문 10,000개를 표본 조사하고, 브랜드 노출 횟수를 집계해 SoV를 계량한다. 실제 AI 사용자 데이터 없이도 통계적으로 유의미한 측정이 가능하다.</p>
+
+    <div class="highlight amber">
+      <span class="hl-label">30회 반복 테스트와의 관계</span>
+      소규모 진단(클라이언트 첫 리포트)은 프롬프트 세트당 30회 반복으로도 경향성 파악 가능. 페르소나 시뮬레이션은 대규모 리테이너 프로젝트에서 페르소나별 10,000개 수준으로 확장한 방법론. 둘은 동일한 원리이고 스케일이 다르다.
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('kpi-map')">KPI 전체 지도</span>
+      <span class="conn-chip" onclick="scrollTo('ga4')">GA4 연계</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     GA4
+══════════════════════════════ -->
+<div class="concept" id="ga4">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-measure-bg);color:var(--cat-measure)">● 측정</span>
+      <div class="concept-title">GA4 연계 & 3중 신뢰성 검증</div>
+      <div class="concept-sub">"AI에 언급됐다"가 실제 매출로 연결되는지 증명</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">SoV가 올랐다. 그래서 매출은? <strong>AI 노출과 실제 전환을 연결</strong>하지 못하면 클라이언트에게 GEO의 가치를 증명할 수 없다.</div>
+    </div>
+
+    <h4>GA4 연계 측정 4가지</h4>
+    <table class="cmp-table">
+      <thead><tr><th>측정 항목</th><th>방법</th><th>의미</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Referrer 추적</strong></td><td>chatgpt.com, perplexity.ai를 GA4 Referral 채널로 분류</td><td>AI에서 직접 유입된 트래픽 확인</td></tr>
+        <tr><td><strong>Direct 채널 분석</strong></td><td>AI 앱 환경의 Referrer 유실 → Direct 증가로 간접 측정</td><td>앱에서 온 유입 추정</td></tr>
+        <tr><td><strong>브랜드 검색 상관관계</strong></td><td>AI SoV 상승 시 브랜드 키워드 검색량 변화 추적</td><td>AI 인지 → 검색 행동 연결</td></tr>
+        <tr><td><strong>전환 퍼널 연계</strong></td><td>AI 유입 추정 세그먼트의 전환율을 일반 오가닉과 비교</td><td>AI 추천의 구매 품질 측정</td></tr>
+      </tbody>
+    </table>
+
+    <h4>3중 신뢰성 검증 체계</h4>
+    <table class="cmp-table">
+      <thead><tr><th>검증 방법</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td><strong>교차 모델 검증</strong></td><td>모든 AI 엔진에서 공통 언급 = 최고 신뢰도. GPT/Claude/Gemini/Perplexity 4개 동시 확인</td></tr>
+        <tr><td><strong>GA4 상관관계 분석</strong></td><td>AI 노출 지수 상승 → 검색량·전환 추이 비교해 인과적 근거 분석</td></tr>
+        <tr><td><strong>Human-in-the-Loop</strong></td><td>AI 감성 판독을 사람이 정기 검수. Precision/Recall로 시스템 정확도 검증</td></tr>
+      </tbody>
+    </table>
+
+    <div class="highlight amber">
+      <span class="hl-label">왜 3중 검증인가</span>
+      AI 시뮬레이션 데이터 단독으로는 클라이언트 설득이 약하다. GA4 실데이터 + AI 시뮬레이션 + 사람 검수의 3중 구조로 "데이터의 신뢰도"를 보장해야 리포트가 의사결정 근거로 쓰인다.
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('kpi-map')">KPI 전체 지도</span>
+      <span class="conn-chip" onclick="scrollTo('full-funnel')">Full Funnel</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     FULL FUNNEL
+══════════════════════════════ -->
+<div class="concept" id="full-funnel">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-strategy-bg);color:var(--cat-strategy)">● 전략</span>
+      <div class="concept-title">Full Funnel 구조</div>
+      <div class="concept-sub">AI 인지에서 구매까지 — 끊기지 않는 여정 설계</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">AI가 브랜드를 추천했다. 사용자가 브랜드 이름을 검색한다. 그다음은? <strong>AI 인지에서 최종 구매까지의 여정에 구멍이 있으면 GEO 효과가 새어나간다.</strong></div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">MAD Full Funnel 5단계</div>
+      <svg viewBox="0 0 660 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:660px">
+        <rect x="5" y="15" width="115" height="70" rx="8" fill="#EEF2FF" stroke="#A5B4FC"/>
+        <text x="62" y="38" text-anchor="middle" font-size="9" fill="#6366F1" font-family="Space Mono">SEO + GEO</text>
+        <text x="62" y="56" text-anchor="middle" font-size="12" fill="#3730A3" font-weight="bold">AI 인지</text>
+        <text x="62" y="72" text-anchor="middle" font-size="10" fill="#666">노출</text>
+        <text x="62" y="84" text-anchor="middle" font-size="10" fill="#666">SoV 확보</text>
+
+        <text x="136" y="53" text-anchor="middle" font-size="14" fill="#CBD5E1">›</text>
+
+        <rect x="145" y="15" width="115" height="70" rx="8" fill="#EEF2FF" stroke="#A5B4FC"/>
+        <text x="202" y="38" text-anchor="middle" font-size="9" fill="#6366F1" font-family="Space Mono">BRAND SEARCH</text>
+        <text x="202" y="56" text-anchor="middle" font-size="12" fill="#3730A3" font-weight="bold">브랜드 검색</text>
+        <text x="202" y="72" text-anchor="middle" font-size="10" fill="#666">검색량 증가</text>
+        <text x="202" y="84" text-anchor="middle" font-size="10" fill="#666">오가닉 유입 ↑</text>
+
+        <text x="276" y="53" text-anchor="middle" font-size="14" fill="#CBD5E1">›</text>
+
+        <rect x="285" y="15" width="115" height="70" rx="8" fill="#FAF5FF" stroke="#C4B5FD"/>
+        <text x="342" y="38" text-anchor="middle" font-size="9" fill="#7E22CE" font-family="Space Mono">DA</text>
+        <text x="342" y="56" text-anchor="middle" font-size="12" fill="#581C87" font-weight="bold">광고 리타겟</text>
+        <text x="342" y="72" text-anchor="middle" font-size="10" fill="#666">세그먼트 DA</text>
+        <text x="342" y="84" text-anchor="middle" font-size="10" fill="#666">리타겟 도달</text>
+
+        <text x="416" y="53" text-anchor="middle" font-size="14" fill="#CBD5E1">›</text>
+
+        <rect x="425" y="15" width="115" height="70" rx="8" fill="#FAF5FF" stroke="#C4B5FD"/>
+        <text x="482" y="38" text-anchor="middle" font-size="9" fill="#7E22CE" font-family="Space Mono">PDP</text>
+        <text x="482" y="56" text-anchor="middle" font-size="12" fill="#581C87" font-weight="bold">페이지 전환</text>
+        <text x="482" y="72" text-anchor="middle" font-size="10" fill="#666">UX·CTA 최적화</text>
+        <text x="482" y="84" text-anchor="middle" font-size="10" fill="#666">전환 흐름</text>
+
+        <text x="556" y="53" text-anchor="middle" font-size="14" fill="#CBD5E1">›</text>
+
+        <rect x="565" y="15" width="85" height="70" rx="8" fill="#1C1A2E"/>
+        <text x="607" y="44" text-anchor="middle" font-size="12" fill="white" font-weight="bold">실매출</text>
+        <text x="607" y="62" text-anchor="middle" font-size="10" fill="#A5B4FC">GA4 연결</text>
+        <text x="607" y="76" text-anchor="middle" font-size="10" fill="#A5B4FC">귀인 분석</text>
+      </svg>
+    </div>
+
+    <div class="misconception">
+      <div class="misconception-label">⚠ 오개념 교정</div>
+      <div class="misconception-row">
+        <div class="mc-wrong">
+          <span class="mc-badge">❌ 흔한 오해</span>
+          "GEO만 잘 하면 매출이 늘어난다."
+        </div>
+        <div class="mc-right">
+          <span class="mc-badge">✓ 정확한 이해</span>
+          GEO는 상위 퍼널(인지) 역할이다. AI가 추천해서 사람이 사이트에 왔는데 PDP가 엉망이면 전환이 안 된다. <strong>AI 인지 → 브랜드 검색 → 리타겟 → PDP 전환 → 구매</strong>의 전 과정이 연결되어야 매출로 이어진다.
+        </div>
+      </div>
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('pdp')">PDP 전환 연계</span>
+      <span class="conn-chip" onclick="scrollTo('ga4')">GA4 측정</span>
+      <span class="conn-chip" onclick="scrollTo('kpi-map')">KPI 지도</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     PDP
+══════════════════════════════ -->
+<div class="concept" id="pdp">
+  <div class="concept-header">
+    <div class="concept-meta">
+      <span class="concept-cat" style="background:var(--cat-strategy-bg);color:var(--cat-strategy)">● 전략</span>
+      <div class="concept-title">PDP 전환 최적화</div>
+      <div class="concept-sub">AI 추천 트래픽은 이미 구매 의향이 높다 — 낭비하지 마라</div>
+    </div>
+  </div>
+  <div class="concept-body">
+    <div class="q-block">
+      <div class="q-label">핵심 질문</div>
+      <div class="q-text">AI 추천으로 유입된 사람은 일반 오가닉보다 구매 의향이 높다(전환율 11.4% vs 오가닉 5.3%). <strong>이 사람들이 PDP에서 이탈하면 GEO 투자가 날아간다.</strong></div>
+    </div>
+
+    <p>PDP(Product Detail Page)는 AI 인지에서 실제 구매로 연결되는 최후의 관문이다. GEO로 만든 인지가 전환으로 이어지려면 PDP가 준비되어 있어야 한다.</p>
+
+    <h4>PDP에서 확인해야 할 것들</h4>
+    <ul class="checklist">
+      <li><strong>첫 화면에 핵심 RTB 노출</strong> — AI가 추천한 이유(수상, 스펙, 후기)가 스크롤 없이 보여야 함</li>
+      <li><strong>CTA 위치와 텍스트</strong> — "구매하기"가 명확한 위치에, 망설임 없는 언어로</li>
+      <li><strong>신뢰 신호 (Social Proof)</strong> — 리뷰 수, 평점, 구매 수 등이 바로 보여야 함</li>
+      <li><strong>모바일 최적화</strong> — AI 검색 사용자 대부분이 모바일</li>
+      <li><strong>로딩 속도</strong> — 3초 이내 미로딩 시 이탈률 급증</li>
+      <li><strong>비교 정보 제공</strong> — "왜 우리 제품인가"를 경쟁사 대비로 설명</li>
+    </ul>
+
+    <div class="highlight purple">
+      <span class="hl-label">GEO × PDP 연결 고리</span>
+      AI가 브랜드를 추천할 때 사용한 키워드(RTB)와 PDP에서 강조하는 메시지가 일치해야 한다. AI가 "배터리 72분"을 이유로 추천했는데, PDP에 배터리 정보가 눈에 안 띄면 사용자가 혼란을 느끼고 이탈한다. GEO 콘텐츠와 PDP 메시지의 <strong>일관성</strong>이 핵심이다.
+    </div>
+
+    <div class="connections">
+      <span class="conn-label">연결 개념 →</span>
+      <span class="conn-chip" onclick="scrollTo('full-funnel')">Full Funnel</span>
+      <span class="conn-chip" onclick="scrollTo('dual-layer')">이중 레이어 설계</span>
+      <span class="conn-chip" onclick="scrollTo('answer-capsule')">Answer Capsule</span>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// progress tracking
+function updateProgress() {
+  const main = document.querySelector('.main');
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = Math.round((scrollTop / docHeight) * 100);
+  document.getElementById('progress').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = pct + '%';
+}
+window.addEventListener('scroll', updateProgress);
+
+// sidebar active
+function setActive(el, cat) {
+  document.querySelectorAll('.sidebar-item').forEach(i => {
+    i.classList.remove('active','why','tech','content','measure','strategy');
+  });
+  el.classList.add('active', cat);
+}
+
+// smooth scroll to concept
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// intersection observer for sidebar highlight
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      const link = document.querySelector(`.sidebar-item[href="#${id}"]`);
+      if (link) {
+        document.querySelectorAll('.sidebar-item').forEach(i => {
+          i.classList.remove('active','why','tech','content','measure','strategy');
+        });
+        // determine cat
+        const cat = link.getAttribute('onclick')?.match(/'([^']+)'\)/)?.[1] || 'why';
+        link.classList.add('active', cat);
+      }
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-52px 0px -50% 0px' });
+
+document.querySelectorAll('.concept').forEach(c => observer.observe(c));
+</script>
+</body>
+</html>
